@@ -7,8 +7,8 @@
 .sidebarChat {
   display: flex;
   padding: 10px;
-  /* justify-content: center; */
-  align-items: start;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 1px solid #f6f6f6;
   cursor: pointer;
 }
@@ -20,7 +20,8 @@
   margin-bottom: 0px;
 }
 .sidebarchat__info {
-  margin-left: 15px;
+  padding-left: 15px;
+  flex: 1;
   margin-top: -10px;
 }
 a {

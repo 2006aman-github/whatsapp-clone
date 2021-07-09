@@ -2,56 +2,71 @@ import React, { useState, useEffect } from "react";
 import "./sidebarchat.css";
 import db from "../Firebase";
 import { Link } from "react-router-dom";
+import { Avatar, IconButton, Typography } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
+import CreateGroup from "./CreateGroup";
+import { actionTypes } from "../reducer";
+import { useStateValue } from "../StateProvider";
 
-function SidebarChat({ room_id, addNewChat, room_name }) {
+function SidebarChat({ roomId, addNewChat, roomName, roomDP }) {
   const [messageList, setMessageList] = useState([]);
-  const avatar_list = [
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcSLCc_TOmmJsOZs0fuYYIstG3I2eSr6Of5-NA&usqp=CAU",
-    "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTRt6fi0w-E0pPWxJEKxLxuFHS1LAi9qD3thA&usqp=CAU",
-    "https://pbs.twimg.com/media/D-cz5P5UcAAuv39.png",
-    "https://www.mandysam.com/img/random.jpg",
-  ];
+  const [openGroupDialog, setOpenGroupDialog] = useState(false);
+  const [{ hideSidebar }, dispatch] = useStateValue();
 
-  const createChat = () => {
-    const roomName = prompt("Enter the Room name:");
-    if (roomName) {
-      // do some clever stuff
-      db.collection("rooms").add({
-        RoomName: roomName,
-      });
-    }
+  const createGroup = () => {
+    setOpenGroupDialog(true);
+  };
+
+  const closeCreateGroup = () => {
+    setOpenGroupDialog(false);
   };
 
   useEffect(() => {
-    if (room_id) {
+    if (roomId) {
       db.collection("rooms")
-        .doc(room_id)
+        .doc(roomId)
         .collection("messages")
         .orderBy("timestamp", "desc")
         .onSnapshot((snap) =>
           setMessageList(snap.docs.map((doc) => doc.data()))
         );
     }
-  }, [room_id]);
+  }, [roomId]);
 
-  return !addNewChat ? (
-    <Link to={`/rooms/${room_id}`}>
-      <div className="sidebarChat">
-        <img
-          src={avatar_list[Math.floor(Math.random() * avatar_list.length)]}
-          alt=""
-          className="sidebarchat__avatar"
-        />
-        <div className="sidebarchat__info">
-          <h2>{room_name}</h2>
-          <span>{messageList[0]?.message.slice(0, 15)}...</span>
+  const handlCloseSidebar = () => {
+    if (hideSidebar) {
+      dispatch({
+        type: actionTypes.handleSidebarType,
+        hideSidebar: {
+          open: false,
+        },
+      });
+    }
+  };
+
+  return (
+    <>
+      {!addNewChat ? (
+        <Link onClick={handlCloseSidebar} to={`/rooms/${roomId}`}>
+          <div className="sidebarChat">
+            <Avatar src={roomDP} alt="" className="sidebarchat__avatar" />
+            <div className="sidebarchat__info">
+              <h2>{roomName}</h2>
+              <span>{messageList[0]?.message.slice(0, 15)}...</span>
+            </div>
+          </div>
+        </Link>
+      ) : (
+        <div onClick={createGroup} className="sidebarChat">
+          <Typography variant="h6">Start New Chat</Typography>
+          <IconButton>
+            <AddIcon />
+          </IconButton>
         </div>
-      </div>
-    </Link>
-  ) : (
-    <div onClick={createChat} className="sidebarChat">
-      <h2>Add new Chat</h2>
-    </div>
+      )}
+
+      <CreateGroup open={openGroupDialog} handleClose={closeCreateGroup} />
+    </>
   );
 }
 

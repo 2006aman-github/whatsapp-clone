@@ -3,6 +3,7 @@ import "./login.css";
 import { auth, provider } from "../Firebase";
 import { useStateValue } from "../StateProvider";
 import { actionTypes } from "../reducer";
+import { Button, Card, Typography } from "@material-ui/core";
 
 function Login() {
   const [{}, dispatch] = useStateValue();
@@ -20,16 +21,37 @@ function Login() {
   };
   return (
     <div className="login">
-      <div className="login__container">
+      <Card
+        style={{
+          maxHeight: "90vh",
+          minHeight: "40vh",
+          display: "flex",
+          padding: "20px 10px",
+          justifyContent: "center",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "300px",
+        }}
+      >
         <img
           src="https://i.pinimg.com/originals/79/dc/31/79dc31280371b8ffbe56ec656418e122.png"
           alt=""
+          style={{ marginBottom: "10px" }}
+          width="100px"
         />
         <div className="login__text">
-          <h2>Login to Whatsapp</h2>
+          <Typography variant="h5" style={{ margin: "20px" }}>
+            Login to Whatsapp
+          </Typography>
         </div>
-        <button onClick={SignIn}>Login With Google</button>
-      </div>
+        <Button
+          variant="contained"
+          style={{ backgroundColor: "#25D366", color: "white" }}
+          onClick={SignIn}
+        >
+          Login With Google
+        </Button>
+      </Card>
     </div>
   );
 }
